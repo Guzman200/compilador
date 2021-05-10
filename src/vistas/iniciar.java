@@ -33,24 +33,24 @@ import javax.swing.filechooser.FileSystemView;
  * @author Pedro Ignacio Ruiz Guzmán Y Pablo Cesar Gordillo Perez
  */
 public class iniciar extends javax.swing.JFrame {
-
+    
     public ArrayList<Token> tokens = new ArrayList<Token>();
 
     /**
      * Creates new form iniciar
      */
     public iniciar() {
-
+        
         initComponents();
         this.setLocationRelativeTo(null);
         this.setResizable(false);
-
+        
         this.setIconImage(new ImageIcon(getClass().getResource("/images/logo.png")).getImage());
         this.setTitle("COMPLEX-RGP");
         btnAnalisisSemantico.setEnabled(false);
         btnAnalisisSintactico.setEnabled(false);
         labelEtapa.setText("{Análisis léxico}");
-
+        
     }
 
     /**
@@ -262,12 +262,12 @@ public class iniciar extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSeleccionarArchivoTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionarArchivoTxtActionPerformed
-
+        
         JFileChooser fs = new JFileChooser(FileSystemView.getFileSystemView());
 
         // Limpiamos el textarea
         txtCodigo.setText("");
-
+        
         fs.setAcceptAllFileFilterUsed(false);
 
         // Establecemos el titulo del dialogo
@@ -286,11 +286,11 @@ public class iniciar extends javax.swing.JFrame {
             // Obtenemos la ruta del archivo seleccionado
             String ruta = fs.getSelectedFile().getAbsolutePath();
             BufferedReader b;
-
+            
             try {
                 // Leemos el archivo seleccionado
                 b = new BufferedReader(new FileReader(ruta));
-
+                
                 String contenidoArchivo = "";
                 String linea;
 
@@ -301,18 +301,18 @@ public class iniciar extends javax.swing.JFrame {
                 }
                 b.close();
                 txtCodigo.setText(contenidoArchivo);
-
+                
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(iniciar.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(iniciar.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            
         } else {
             // Si el usuario cancelo la operación
             JOptionPane.showMessageDialog(this, "No se selecciono ningun archivo");
         }
-
+        
         btnAnalisisLexico.setEnabled(true);
         btnAnalisisSintactico.setEnabled(false);
         btnAnalisisSemantico.setEnabled(false);
@@ -332,16 +332,16 @@ public class iniciar extends javax.swing.JFrame {
 
         // Obtenemos los tokens 
         this.tokens = lexer.lex(codigo);
-
+        
         String errores = "-------------------------------------->  TOKENS NO VALIDOS :'v  <------------------------------------\n\n";
         String tokensValidos = "\n\n\n---------------------------------------------> TOKENS VALIDOS :v <------------------------------------\n\n";
-
+        
         for (Token token : this.tokens) {
             tokensValidos = tokensValidos + "{" + token.getValor() + "}" + " " + token.getTipo() + "\n";
         }
-
+        
         boolean hayErrores = lexer.ERROR_LEXICO;
-
+        
         if (hayErrores) {
             errores = errores + "ERROR EN EL ANALIZADOR LEXICO\n";
         } else {
@@ -350,9 +350,9 @@ public class iniciar extends javax.swing.JFrame {
                 errores = errores + "{" + tokenNoValido + "}" + " TOKEN NO RECONOCIDO! \n";
             }
         }
-
+        
         txtErroresLexico.setText(errores);
-
+        
         if (hayErrores) {
             txtErroresLexico.setBackground(Color.red);
         } else {
@@ -373,7 +373,7 @@ public class iniciar extends javax.swing.JFrame {
         boolean hayErrores = false;
         Token ultimoToken = new Token();
         String errores = "--------------------------------->  ERRORES SINTÁCTICOS  <--------------------------------\n\n";
-
+        
         int numeroTokens = this.tokens.size();
 
         // numero de condiciones que se deben de cerrar
@@ -381,9 +381,9 @@ public class iniciar extends javax.swing.JFrame {
 
         // Recorremos todos los tokens
         for (int i = 0; i < this.tokens.size(); i++) {
-
+            
             if (esPrimerToken) {
-
+                
                 if (!(this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_INICIAR)) {
                     errores += "No se ha encontrado la palabra reservada INICIAR \n";
                     hayErrores = true;
@@ -396,9 +396,9 @@ public class iniciar extends javax.swing.JFrame {
                 if (this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_ENTERO
                         || this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_DECIMAL
                         || this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_TEXTO) {
-
+                    
                     boolean esCorrecto = Helper.declaracionDeVariable(tokens, i);
-
+                    
                     if (!esCorrecto) {
                         errores += "Error al intentar declarar variable \n";
                         hayErrores = true;
@@ -410,7 +410,7 @@ public class iniciar extends javax.swing.JFrame {
                     // Si es asignacion de variable 
                 } else if (this.tokens.get(i).getTipo() == Tipos.IDENTIFICADOR) {
                     boolean esCorrecto = Helper.asignacionDeVariable(tokens, i);
-
+                    
                     if (!esCorrecto) {
                         errores += "Error al intentar asignar un valor a la variable " + this.tokens.get(i).getValor() + "\n";
                         hayErrores = true;
@@ -421,11 +421,11 @@ public class iniciar extends javax.swing.JFrame {
 
                     // Si es una condicional
                 } else if (this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_SI) {
-
+                    
                     numeroDeCondicionesYCiclosPorCerrar++; //
 
                     boolean esCorrecto = Helper.condicionalOrCiclo(tokens, i);
-
+                    
                     if (!esCorrecto) {
                         errores += "Error en estructura condicional SI \n";
                         hayErrores = true;
@@ -436,11 +436,11 @@ public class iniciar extends javax.swing.JFrame {
 
                     // Si es un ciclo
                 } else if (this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_CICLO) {
-
+                    
                     numeroDeCondicionesYCiclosPorCerrar++; //
 
                     boolean esCorrecto = Helper.condicionalOrCiclo(tokens, i);
-
+                    
                     if (!esCorrecto) {
                         errores += "Error en estructura CICLO \n";
                         hayErrores = true;
@@ -448,37 +448,63 @@ public class iniciar extends javax.swing.JFrame {
                     } else {
                         i = Helper.continuarPos;
                     }
-
+                    
                 } else if (this.tokens.get(i).getTipo() == Tipos.CORCHETE_CIERRE) {
-
+                    
                     numeroDeCondicionesYCiclosPorCerrar--;
                     if (numeroDeCondicionesYCiclosPorCerrar < 0) {
                         hayErrores = true;
                         errores += "Error sintáctico en cierre de condicional ó ciclo \n";
                         break;
                     }
-
+                    
                 } else if (this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_TERMINAR) {
 
                     // Si la palabra reservada TERMINAR no es el ultimo token
                     if (!(i == (numeroTokens - 1))) {
-
+                        
                         hayErrores = true;
                         errores += "Error sintáctico con la palabra reservada TERMINAR. \n";
                         break;
-
+                        
                     }
-
-                } else {
-
+                    
+                }else if(this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_SINO){
+                  
+                  
+                    boolean esCorrecto = Helper.verificarEstructuraSINO(tokens, i);
+                    
+                    if(!esCorrecto){
+                        hayErrores = true;
+                        errores += "Error en la sintáctico en la estructura de control SINO \n";
+                        break;
+                    }
+                    
+                    System.out.println("SALIO DE SINO");
+     
+                    
+                }else if(this.tokens.get(i).getTipo() == Tipos.CORCHETE_APERTURA){
+                    
+                    numeroDeCondicionesYCiclosPorCerrar++;
+                    
+                    boolean esCorrecto = Helper.verificarCorcheteApertura(tokens, i);
+                    
+                    if(!esCorrecto){
+                        hayErrores = true;
+                        errores += "Error en la sintáctico, la causa puede ser un: }  \n";
+                        break;
+                    }
+                
+                }else {
+                    
                     hayErrores = true;
                     errores += "Error sintáctico lamentamos no poder darle una pista ;( \n";
                     break;
-
+                    
                 }
-
+                
             }
-
+            
         } // FIN FOR
 
         // Guardamos el valor del ultimo token del codigo
@@ -490,7 +516,7 @@ public class iniciar extends javax.swing.JFrame {
             errores += "No se ha encontrado la palabra reservada TERMINAR \n";
             hayErrores = true;
         }
-
+        
         if (!hayErrores) {
             // Si el numero de condicionales y ciclos por cerrar no es 0
             if (!(numeroDeCondicionesYCiclosPorCerrar == 0)) {
@@ -498,37 +524,37 @@ public class iniciar extends javax.swing.JFrame {
                 hayErrores = true;
             }
         }
-
+        
         txtErroresLexico.setText(errores);
-
+        
         if (hayErrores) {
             txtErroresLexico.setBackground(Color.red);
         } else {
-
+            
             btnAnalisisSintactico.setEnabled(false);
             btnAnalisisSemantico.setEnabled(true);
             labelEtapa.setText("{Análisis semántico}");
             JOptionPane.showMessageDialog(this, "Etapa de analsís sintáctico pasada con exito", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
         }
-
+        
 
     }//GEN-LAST:event_btnAnalisisSintacticoActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
+        
         btnAnalisisLexico.setEnabled(true);
         btnAnalisisSintactico.setEnabled(false);
         btnAnalisisSemantico.setEnabled(false);
-
+        
         txtErroresLexico.setBackground(Color.BLACK);
         labelEtapa.setText("{Análisis sintáctico}");
         txtErroresLexico.setText("");
-
+        
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnLimpiarCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarCodigoActionPerformed
-
+        
         txtCodigo.setText("");
 
     }//GEN-LAST:event_btnLimpiarCodigoActionPerformed
@@ -537,7 +563,7 @@ public class iniciar extends javax.swing.JFrame {
 
         /* ANALISIS SEMÁNTICO */
         String errores = "--------------------------------->  ERRORES SEMÁNTICOS  <--------------------------------\n\n";
-
+        
         boolean hayErrores = false;
 
         // Verificar si las variables ya han sido declaradas previamente
@@ -547,7 +573,7 @@ public class iniciar extends javax.swing.JFrame {
             if (this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_ENTERO
                     || this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_DECIMAL
                     || this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_TEXTO) {
-
+                
                 boolean yaHaSidoDeclarada = HelperSemanctico.laVariableYaHaSidoDeclarada(tokens, i, this.tokens.get(i + 1).getValor());
 
                 // Si la variable ya ha sido declarada antes
@@ -559,20 +585,20 @@ public class iniciar extends javax.swing.JFrame {
 
                 // Verificamos que al declarar la variable se esta inicializando con su mismo tipo de dato
                 boolean haSidoDeclaradaCorrectamente = HelperSemanctico.laVariableDeclaradaEsInicializadaCorrectamente(tokens, i);
-
+                
                 if (!haSidoDeclaradaCorrectamente) {
                     errores += "Error en la inicialización de la variable " + this.tokens.get(i + 1).getValor() + "\n";
                     hayErrores = true;
                     break;
                 }
-
+                
                 i = HelperSemanctico.continuarPos;
 
                 // Si es asignacion de variable 
             } else if (this.tokens.get(i).getTipo() == Tipos.IDENTIFICADOR) {
-
+                
                 boolean yaHaSidoDeclarada = HelperSemanctico.laVariableYaHaSidoDeclarada(tokens, i, this.tokens.get(i).getValor());
-
+                
                 if (!yaHaSidoDeclarada) {
                     errores += "Error la variable " + this.tokens.get(i).getValor() + " no ha sido declarada  \n";
                     hayErrores = true;
@@ -581,55 +607,55 @@ public class iniciar extends javax.swing.JFrame {
 
                 // Verificamos que las asignaciones sean del mismo tipo de dato
                 boolean laAsignacionEsCorrecta = HelperSemanctico.laAsignacionDeUnaVariableEsCorrecta(this.tokens, i);
-
+                
                 if (!laAsignacionEsCorrecta) {
                     errores += "Error en la asignación de la variable " + this.tokens.get(i).getValor() + "\n";
                     hayErrores = true;
                     break;
                 }
-
+                
                 i = HelperSemanctico.continuarPos;
 
                 // Si es una condicional
             } else if (this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_SI) {
-
+                
                 boolean lasVariablesDelaCondicionYaFueronDeclaradas = HelperSemanctico.lasVariablesDeUnCicloOCondicionYaFueronDeclaradas(tokens, i);
-
+                
                 if (!lasVariablesDelaCondicionYaFueronDeclaradas) {
                     errores += "Error las variable(s) de una condición SI no estan declaradas\n";
                     hayErrores = true;
                     break;
                 }
-
+                
                 boolean lasVariablesDeLaCondicionSonDelMismoTipo = HelperSemanctico.lasVariablesDeUnCicloOCondicionSonDelMismoTipo(tokens, i);
-
+                
                 if (!lasVariablesDeLaCondicionSonDelMismoTipo) {
                     errores += "Error las variable(s) de una condición SI no son del mismo tipo\n";
                     hayErrores = true;
                     break;
                 }
-
+                
                 i = HelperSemanctico.continuarPos;
 
                 // Si es un ciclo
             } else if (this.tokens.get(i).getTipo() == Tipos.PALABRA_RESERVADA_CICLO) {
-
+                
                 boolean lasVariablesDelaCondicionYaFueronDeclaradas = HelperSemanctico.lasVariablesDeUnCicloOCondicionYaFueronDeclaradas(tokens, i);
-
+                
                 if (!lasVariablesDelaCondicionYaFueronDeclaradas) {
                     errores += "Error las variable(s) de un CICLO no estan declaradas\n";
                     hayErrores = true;
                     break;
                 }
-
+                
                 boolean lasVariablesDeLaCondicionSonDelMismoTipo = HelperSemanctico.lasVariablesDeUnCicloOCondicionSonDelMismoTipo(tokens, i);
-
+                
                 if (!lasVariablesDeLaCondicionSonDelMismoTipo) {
                     errores += "Error las variable(s) de un CICLO no son del mismo tipo\n";
                     hayErrores = true;
                     break;
                 }
-
+                
                 i = HelperSemanctico.continuarPos;
             } else {
                 /*
@@ -637,20 +663,20 @@ public class iniciar extends javax.swing.JFrame {
                 errores += "Error sintáctico lamentamos no poder darle una pista ;( \n";
                 break;
                  */
-
+                
             }
-
+            
         }
-
+        
         if (hayErrores) {
             txtErroresLexico.setBackground(Color.red);
         } else {
             txtErroresLexico.setBackground(Color.BLACK);
             JOptionPane.showMessageDialog(this, "Etapa de analsís semánctico pasada con exito", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
         }
-
+        
         txtErroresLexico.setText(errores);
-
+        
 
     }//GEN-LAST:event_btnAnalisisSemanticoActionPerformed
 

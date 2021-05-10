@@ -12,7 +12,6 @@ public class Token {
     public enum Tipos {
         
         NUMERO_ENTERO("^[0-9]+$"),
-        //NUMERO_DECIMAL("[0-9]+[.]{1}[0-9]+"),
         NUMERO_DECIMAL("^[0-9]+[.]{1}[0-9]+$"),
         TEXTO("^[\"]{1}(.*)[\"]{1}$"),
         IDENTIFICADOR("[$]{1}[a-zA-Z_]+([a-zA-Z_]+|[0-9]+)*"),
@@ -32,6 +31,7 @@ public class Token {
         PALABRA_RESERVADA_TERMINAR("^TERMINAR$"),
         PALABRA_RESERVADA_CICLO("^CICLO$"),
         PALABRA_RESERVADA_SI("^SI$"),
+        PALABRA_RESERVADA_SINO("^SINO$"),
         CORCHETE_APERTURA("^\\{$"),
         CORCHETE_CIERRE("^\\}$");
 
